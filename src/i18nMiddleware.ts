@@ -1,7 +1,9 @@
 import getDefaultLang from './_helpers/getDefaultLang'
 import startsWithLang from './_helpers/startsWithLang'
+import I18nConfig from './config'
+import { IncomingMessage } from 'http'
 
-export default function i18nMiddleware(config = {}) {
+export default function i18nMiddleware(config: I18nConfig = {}) {
   let {
     ignoreRoutes = [
       '/_next/',
@@ -26,8 +28,12 @@ export default function i18nMiddleware(config = {}) {
     )
   }
 
-  return (req, res, next) => {
-    const ignore = ignoreRoutes.some((r) => req.url.startsWith(r))
+  return (req: any) => {
+    // TODO why is that an IncommingMessage
+    // @ts-ignore
+    const { res, next } = req
+
+    const ignore = ignoreRoutes.some((r) => req.url?.startsWith(r))
     const defaultLanguage = getDefaultLang(req, config) || 'en'
 
     /**

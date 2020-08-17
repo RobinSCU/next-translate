@@ -1,13 +1,14 @@
 import React, { createContext, useContext } from 'react'
 import I18nContext from './_context'
 import { setInternals } from './_helpers/_internals'
+import Internals from './_helpers/_intenals'
 
 const NsContext = createContext({})
 
 /**
  * Get value from key (allow nested keys as parent.children)
  */
-function getDicValue(dic, key = '', options = { returnObjects: false }) {
+function getDicValue(dic: any, key = '', options = { returnObjects: false }) {
   const value = key.split('.').reduce((val, key) => val[key] || {}, dic)
 
   if (
@@ -21,7 +22,7 @@ function getDicValue(dic, key = '', options = { returnObjects: false }) {
 /**
  * Control plural keys depending the {{count}} variable
  */
-function plural(dic, key, query) {
+function plural(dic: object, key: string, query: any) {
   if (!query || typeof query.count !== 'number') return key
 
   const numKey = `${key}_${query.count}`
@@ -37,7 +38,7 @@ function plural(dic, key, query) {
 /**
  * Replace {{variables}} to query values
  */
-function interpolation(text, query) {
+function interpolation(text: string, query: any): string {
   if (!text || !query) return text || ''
 
   return Object.keys(query).reduce((all, varKey) => {
@@ -47,7 +48,7 @@ function interpolation(text, query) {
   }, text)
 }
 
-function objectInterpolation(obj, query) {
+function objectInterpolation(obj: any, query: any) {
   if (!query || Object.keys(query).length === 0) return obj
   Object.keys(obj).forEach((key) => {
     if (obj[key] instanceof Object) objectInterpolation(obj[key], query)
@@ -61,15 +62,21 @@ export default function I18nProvider({
   namespaces = {},
   children,
   internals = {},
-}) {
+}: {
+  lang: string
+  namespaces: object
+  children: JSX.Element
+  internals?: Internals
+}): JSX.Element {
   const ns = useContext(NsContext)
   const allNamespaces = { ...ns, ...namespaces }
 
   setInternals({ ...internals, lang })
 
-  function t(key = '', query, options) {
-    const k = Array.isArray(key) ? key[0] : key
+  function t(key = '', query: any, options: any) {
+    const k: string = Array.isArray(key) ? key[0] : key
     const [namespace, i18nKey] = k.split(':')
+    // @ts-ignore
     const dic = allNamespaces[namespace] || {}
     const keyWithPlural = plural(dic, i18nKey, query)
     const value = getDicValue(dic, keyWithPlural, options)

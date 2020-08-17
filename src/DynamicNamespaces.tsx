@@ -7,6 +7,11 @@ export default function DynamicNamespaces({
   namespaces = [],
   fallback,
   children,
+}: {
+  dynamic: any
+  namespaces: any[]
+  fallback: string
+  children: any
 }) {
   const { lang } = useTranslation()
   const [loaded, setLoaded] = useState(false)
@@ -16,7 +21,7 @@ export default function DynamicNamespaces({
     if (typeof dynamic !== 'function') return
 
     const pageNamespaces = await Promise.all(
-      namespaces.map(ns => dynamic(lang, ns))
+      namespaces.map((ns) => dynamic(lang, ns))
     )
     setPageNs(pageNamespaces)
     setLoaded(true)
@@ -32,6 +37,7 @@ export default function DynamicNamespaces({
     <I18nProvider
       lang={lang}
       namespaces={namespaces.reduce((obj, ns, i) => {
+        // @ts-ignore
         obj[ns] = pageNs[i]
         return obj
       }, {})}

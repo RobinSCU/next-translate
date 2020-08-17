@@ -1,13 +1,15 @@
 import React from 'react'
-import App from 'next/app'
+import App, { AppContext } from 'next/app'
 import I18nProvider from './I18nProvider'
 import getDefaultLang from './_helpers/getDefaultLang'
 import getPageNamespaces from './_helpers/getPageNamespaces'
 import startsWithLang from './_helpers/startsWithLang'
+import I18nConfig from './config'
+import Internals from './_helpers/_intenals'
 
-function getLang(ctx, config) {
+function getLang(ctx: any, config: I18nConfig) {
+  //TODO what is ctx?
   const { req, asPath = '' } = ctx
-
   if (req) return req.query.lang || config.defaultLanguage
 
   return startsWithLang(asPath, config.allLanguages)
@@ -15,12 +17,16 @@ function getLang(ctx, config) {
     : config.defaultLanguage
 }
 
-function removeTrailingSlash(path = '') {
+function removeTrailingSlash(path: string = ''): string {
   return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
 }
 
-export default function appWithI18n(AppToTranslate, config = {}) {
-  function AppWithTranslations(props) {
+export default function appWithI18n(
+  AppToTranslate: typeof App,
+  config: I18nConfig = {}
+) {
+  function AppWithTranslations(props: any) {
+    // TODO type of props
     const { lang, namespaces, defaultLanguage } = props
     const { defaultLangRedirect } = config
 
@@ -35,17 +41,19 @@ export default function appWithI18n(AppToTranslate, config = {}) {
     )
   }
 
-  AppWithTranslations.getInitialProps = async (appCtx) => {
+  AppWithTranslations.getInitialProps = async (appCtx: AppContext) => {
     const { Component, ctx } = appCtx
     const defaultLanguage = ctx.req
       ? getDefaultLang(ctx.req, config)
-      : __NEXT_DATA__.props.defaultLanguage
+      : // @ts-ignore
+        __NEXT_DATA__.props.defaultLanguage
     const lang = getLang(ctx, { ...config, defaultLanguage })
     const getInitialProps =
       AppToTranslate.getInitialProps || App.getInitialProps
     let appProps = { pageProps: {} }
 
     if (getInitialProps) {
+      // @ts-ignore
       appProps = (await getInitialProps({ ...appCtx, lang })) || {}
     }
 

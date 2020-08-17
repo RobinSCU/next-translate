@@ -7,10 +7,15 @@
       "presets": ["next/babel", "minify"]
     },
     "test": {
-      "plugins": [
-        ["transform-es2015-modules-commonjs"]
-      ],
-      "presets": [["next/babel", { "preset-env": { "modules": "commonjs" } }]]
+      "presets": [
+        ["next/babel",
+          {
+            "preset-env": {
+              "modules": "commonjs"
+            }
+          }
+        ]
+      ]
     }
   },
   "ignore": ["node_modules"],

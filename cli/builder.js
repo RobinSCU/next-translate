@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const path = require('path')
-const getPageNamespaces = require('../_helpers/getPageNamespaces').default
+const getPageNamespaces = require('../build/_helpers/getPageNamespaces').default
 
 let {
   allLanguages = [],
